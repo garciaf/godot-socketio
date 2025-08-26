@@ -23,8 +23,8 @@ enum State {
 }
 
 # to avoid missunderstanding/missusage, the engine signals have been prefixed with "engine_" to distinguish them from the socket.io signals
-signal engine_conncetion_opened()
-signal engine_conncetion_closed()
+signal engine_connection_opened()
+signal engine_connection_closed()
 signal engine_message_received(data: String)
 signal engine_transport_upgraded()
 
@@ -117,7 +117,7 @@ func engine_close():
 			_close_http_request.on_response_received.connect(_close_http_completed)
 			_close_http_request.request_post(_get_url(), str(EnginePacketType.CLOSE))
 
-	engine_conncetion_closed.emit()
+	engine_connection_closed.emit()
 	_clear_values()
 
 
@@ -201,7 +201,7 @@ func _on_open(body: String = ""):
 		_upgrade_transport()
 	else:
 		_transport_type = TransportType.POLLING
-		engine_conncetion_opened.emit()
+		engine_connection_opened.emit()
 		_poll()
 	
 
@@ -216,7 +216,7 @@ func _on_ping():
 func _on_pong():
 	_websocket_send(EnginePacketType.UPGRADE)
 	_transport_type = TransportType.WEBSOCKET
-	engine_conncetion_opened.emit()
+	engine_connection_opened.emit()
 
 
 func _on_message(body: String = ""):

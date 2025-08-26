@@ -46,9 +46,9 @@ func _ready():
 		"auth": {}
 	}
 
-	engine_conncetion_opened.connect(_on_engine_io_conncetion_opened)
+	engine_connection_opened.connect(_on_engine_io_connection_opened)
 	engine_message_received.connect(_socket_parse_packet)
-	engine_conncetion_closed.connect(_on_engine_io_conncetion_closed)
+	engine_connection_closed.connect(_on_engine_io_connection_closed)
 
 
 ## connects to the default namespace of socket server
@@ -151,11 +151,11 @@ func disconnect_socket():
 	socket_disconnected.emit()
 
 
-func _on_engine_io_conncetion_closed():
+func _on_engine_io_connection_closed():
 	socket_disconnected.emit()
 
 
-func _on_engine_io_conncetion_opened():
+func _on_engine_io_connection_opened():
 	connect_to_namespace(default_namespace, _namespaces[default_namespace].auth)
 
 

@@ -8,7 +8,7 @@ This is a [Socket.IO](https://socket.io/) and [Engine.IO](https://socket.io/docs
 
 | Godot | plugin version | Socket.IO server |
 | -------------- | ---------------- | ---------------- |
-| 4.3 | 0.1.x | 4.x |
+| 4.3, 4.4 | 0.1.x | 4.x |
 
 > I haven’t checked the current implementation with older versions of the Godot and Socket.IO server. I hereby ask you to do this and inform me if it works or not.
 

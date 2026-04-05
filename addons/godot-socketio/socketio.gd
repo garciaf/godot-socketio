@@ -148,7 +148,6 @@ func disconnect_socket():
 		disconnect_namespace(ns)
 	
 	engine_close()
-	socket_disconnected.emit()
 
 
 func _on_engine_io_connection_closed():

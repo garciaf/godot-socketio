@@ -27,7 +27,7 @@ signal engine_connection_opened()
 signal engine_connection_closed()
 signal engine_message_received(data: String)
 signal engine_transport_upgraded()
-signal reconnect_attempt(attempt: int, max: int)
+signal reconnection_attempted(attempt: int, max: int)
 
 const ENGINE_VERSION: int = 4
 
@@ -36,7 +36,7 @@ const ENGINE_VERSION: int = 4
 @export var path: String = "/engine.io"
 @export var auto_reconnect: bool = true
 @export var max_reconnect_attempts: int = 5
-@export var reconnect_base_delay: float = 1.0
+@export var reconnect_base_delay_seconds: float = 1.0
 
 var session_id: String = ""
 var state = State.DISCONNECTED
@@ -77,21 +77,13 @@ func _process(_delta):
 	elif _socket_state == WebSocketPeer.STATE_CLOSED:
 		if auto_reconnect and _reconnect_attempts < max_reconnect_attempts:
 			_reconnect_attempts += 1
-			reconnect_attempt.emit(_reconnect_attempts, max_reconnect_attempts)
-			session_id = ""
-			state = State.DISCONNECTED
-			_websocket = null
+			_clear_values()
 			_polling_http_request = null
 			_send_data_http_request = null
-			_send_data_queue.clear()
-			_probe_sent = false
-			_transport_type = TransportType.POLLING
-			_ping_interval = 0
-			_pong_timeout = 0
-			_max_payload = 0
 			var t := Timer.new()
-			t.wait_time = reconnect_base_delay * _reconnect_attempts
+			t.wait_time = reconnect_base_delay_seconds * _reconnect_attempts
 			t.one_shot = true
+			t.timeout.connect(_emit_reconnection_attempted)
 			t.timeout.connect(engine_make_connection)
 			t.timeout.connect(t.queue_free)
 			add_child(t)
@@ -160,6 +152,8 @@ func _clear_values():
 	_max_payload = 0
 	_reconnect_attempts = 0
 
+func _emit_reconnection_attempted():
+	reconnection_attempted.emit(_reconnect_attempts, max_reconnect_attempts)
 
 func _parse_packet(data: String):
 	var messages := data.split("")
@@ -243,6 +237,7 @@ func _on_ping():
 
 func _on_pong(payload: String = ""):
 	if payload != "probe":
+		push_warning("Received unexpected pong with payload: %s" % payload)
 		return
 	_websocket_send(EnginePacketType.UPGRADE)
 	_transport_type = TransportType.WEBSOCKET

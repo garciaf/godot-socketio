@@ -39,7 +39,7 @@ const ENGINE_VERSION: int = 4
 @export var reconnect_base_delay_seconds: float = 1.0
 
 var session_id: String = ""
-var state = State.DISCONNECTED
+var state := State.DISCONNECTED
 
 var _websocket: WebSocketPeer
 var _polling_http_request: Request

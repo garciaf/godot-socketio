@@ -163,7 +163,10 @@ func _parse_packet(data: String):
 				_on_open(message)
 			EnginePacketType.CLOSE:
 				state = State.DISCONNECTED
-				engine_close()
+				if _transport_type == TransportType.WEBSOCKET:
+					_websocket.close()
+				else:
+					engine_close()
 			EnginePacketType.PING:
 				_on_ping()
 			EnginePacketType.PONG:
